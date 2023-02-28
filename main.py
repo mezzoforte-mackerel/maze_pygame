@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 import sys
 import random
-import colorswatch as cs
+import imports.colorswatch as cs
 
 from tkinter import *
 from tkinter import messagebox
