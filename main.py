@@ -128,7 +128,7 @@ class Sound:
   def __init__(self):
     self.se = {
       "move": pygame.mixer.Sound("./sound/move.mp3"),
-      "goal": pygame.mixer.Sound("./sound/move.mp3"),
+      "goal": pygame.mixer.Sound("./sound/goal.mp3"),
     }
 
 # main
