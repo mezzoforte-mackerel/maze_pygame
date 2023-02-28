@@ -15,6 +15,7 @@ class GameMaster:
     self.screen = pygame.display.set_mode(self.screen_size)
     self.maze = Maze(self.screen_size)
     self.maze.make()
+    self.sound = Sound()
     
   def main(self):  
     while True:
@@ -32,9 +33,9 @@ class GameMaster:
         pygame.quit()
         sys.exit()
       if event.type == KEYDOWN:
-        self.maze.update(event.key)
+        self.maze.update(event.key, self.sound)
 
-class Maze():
+class Maze:
   def __init__(self, screen_size):
     self.tile_size = 19
     self.maze_width = int(screen_size[0] / self.tile_size)
@@ -80,8 +81,8 @@ class Maze():
         )
     self.player.draw(screen, self.tile_size)
     
-  def update(self, key):
-    if self.player.update(key, self.maze) == "end":
+  def update(self, key, sound):
+    if self.player.update(key, self.maze, sound) == "end":
       self.make()
       self.player.__init__(self.maze_width - 2, self.maze_height - 2)
     
@@ -101,23 +102,35 @@ class Player:
       radius = 7,
     )
   
-  def update(self, key, maze):
+  def update(self, key, maze, sound):
     cx, cy = self.x, self.y
     if key == K_LEFT:
       self.x -= 1
+      sound.se["move"].play()
     elif key == K_RIGHT:
       self.x += 1
+      sound.se["move"].play()
     elif key == K_UP:
       self.y -= 1
+      sound.se["move"].play()
     elif key == K_DOWN:
       self.y += 1
+      sound.se["move"].play()
     if maze[self.y][self.x] == 2:
       messagebox.showinfo("ゴール", "宝を見つけた！")
+      sound.se["goal"].play()
       return "end"
     if maze[self.y][self.x] != 0:
       self.x, self.y = cx, cy
     return "continue"
     
+class Sound:
+  def __init__(self):
+    self.se = {
+      "move": pygame.mixer.Sound("./sound/move.mp3"),
+      "goal": pygame.mixer.Sound("./sound/move.mp3"),
+    }
+
 # main
 if __name__ == "__main__":
   gm = GameMaster()
