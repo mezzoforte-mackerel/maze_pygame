@@ -8,38 +8,34 @@ from tkinter import *
 from tkinter import messagebox
 Tk().wm_withdraw() 
 
-# define variables
-screen_size = (600, 400)
+class GameMaster:
+  def __init__(self):
+    self.screen_size = (600, 400)
+    pygame.init()
+    self.screen = pygame.display.set_mode(self.screen_size)
+    self.maze = Maze(self.screen_size)
+    self.maze.make()
+    
+  def main(self):  
+    while True:
+      self.draw()
+      pygame.display.update()
+      self.event()
+      
+  def draw(self):
+    self.screen.fill(cs.black["pygame"])
+    self.maze.draw(self.screen)
 
-# define functions
-def main():
-  screen = init()
-  maze = Maze()
-  maze.make()
-  
-  while True:
-    draw(screen, maze)
-    pygame.display.update()
-    event(maze)
-  
-def init():
-  pygame.init()
-  return pygame.display.set_mode(screen_size)
-
-def draw(screen, maze):
-  screen.fill(cs.black["pygame"])
-  maze.draw(screen)
-
-def event(maze):
-  for event in pygame.event.get():
-    if event.type == QUIT:
-      pygame.quit()
-      sys.exit()
-    if event.type == KEYDOWN:
-      maze.update(event.key)
+  def event(self):
+    for event in pygame.event.get():
+      if event.type == QUIT:
+        pygame.quit()
+        sys.exit()
+      if event.type == KEYDOWN:
+        self.maze.update(event.key)
 
 class Maze():
-  def __init__(self):
+  def __init__(self, screen_size):
     self.tile_size = 19
     self.maze_width = int(screen_size[0] / self.tile_size)
     self.maze_height = int(screen_size[1] / self.tile_size)
@@ -58,20 +54,13 @@ class Maze():
         else:
           row.append(0)
       self.maze.append(row)
-
     for y in range(2, self.maze_height - 2):
       for x in range(2, self.maze_width - 2):
         if x % 2 == 0 and y % 2 == 0:
           r = random.randint(0, 3)
           self.maze[y][x] = 1
           self.maze[y + self.tbl[r][1]][x + self.tbl[r][0]] = 1
-          
-    # player
-    self.player.x, self.player.y = self.maze_width - 2, self.maze_height - 2
-    
-    # goal
-    self.maze[1][1] = 2
-    
+    self.maze[1][1] = 2 # goal
     
   def draw(self, screen):
     for y in range(self.maze_height):
@@ -89,24 +78,28 @@ class Maze():
             self.tile_size
           ),
         )
-    pygame.draw.circle(
-      surface = screen,
-      color = cs.red["pygame"],
-      center = (
-        self.player.x * self.tile_size + 0.5 * self.tile_size,
-        self.player.y * self.tile_size + 0.5 * self.tile_size,
-      ),
-      radius = 7,
-    )
+    self.player.draw(screen, self.tile_size)
     
   def update(self, key):
     if self.player.update(key, self.maze) == "end":
       self.make()
+      self.player.__init__(self.maze_width - 2, self.maze_height - 2)
     
 class Player:
   def __init__(self, x, y):
     self.x = x
     self.y = y
+    
+  def draw(self, screen, tile_size):
+    pygame.draw.circle(
+      surface = screen,
+      color = cs.red["pygame"],
+      center = (
+        self.x * tile_size + 0.5 * tile_size,
+        self.y * tile_size + 0.5 * tile_size,
+      ),
+      radius = 7,
+    )
   
   def update(self, key, maze):
     cx, cy = self.x, self.y
@@ -127,4 +120,5 @@ class Player:
     
 # main
 if __name__ == "__main__":
-  main()
+  gm = GameMaster()
+  gm.main()
