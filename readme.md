@@ -18,3 +18,7 @@
 ### 効果音
 
 [OtoLogic](https://otologic.jp)様
+
+### colorswatch
+
+[TokyoGaijin](https://github.com/TokyoGaijin)様
